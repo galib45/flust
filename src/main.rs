@@ -23,6 +23,7 @@ fn main() {
         show_size: false,
         show_dir_as_file: false,
         sort_field: String::from("name"),
+        reverse: false,
     };
     {
         let mut parser = ArgumentParser::new();
@@ -62,6 +63,11 @@ fn main() {
             Store,
             "with -l, sort the output according to the specified field, available fields are name (default), size & time"	
         );
+        parser.refer(&mut args.reverse).add_option(
+        	&["-r", "--reverse"],
+            StoreTrue,
+            "with -l, reverse the sorting order"	
+        );
         parser.parse_args_or_exit();
     }
     if args.show_version {
@@ -78,11 +84,23 @@ fn main() {
 	let mut listing = get_listing(&args);
 	if args.show_long {
 		if args.sort_field.as_str() == "size" {
-			listing.par_sort_by(|x,y| x.size.cmp(&y.size));
+			if args.reverse {
+				listing.par_sort_by(|x,y| y.size.cmp(&x.size));	
+			} else {
+				listing.par_sort_by(|x,y| x.size.cmp(&y.size));
+			}
 		} else if args.sort_field.as_str() == "time" {
-			listing.par_sort_by(|x,y| x.mtime.cmp(&y.mtime));
+			if args.reverse {
+				listing.par_sort_by(|x,y| y.mtime.cmp(&x.mtime));
+			} else {
+				listing.par_sort_by(|x,y| x.mtime.cmp(&y.mtime));
+			}
 		} else {
-			listing.par_sort_by(|x,y| x.name.cmp(&y.name));
+			if args.reverse {
+				listing.par_sort_by(|x,y| y.name.cmp(&x.name));
+			} else {
+				listing.par_sort_by(|x,y| x.name.cmp(&y.name));
+			}
 		}
 	} else {
 		listing.par_sort_by(|x,y| x.name.cmp(&y.name));

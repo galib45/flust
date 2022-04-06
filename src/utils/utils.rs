@@ -15,6 +15,7 @@ pub struct Arguments {
     pub show_size: bool,
     pub show_dir_as_file: bool,
     pub sort_field: String,
+    pub reverse: bool,
 }
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
